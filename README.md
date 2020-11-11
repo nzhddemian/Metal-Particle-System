@@ -1,5 +1,4 @@
 # Particle
 
-Simple particle system from the metalkit.org tutorials.  
+Simple particle system from the metalkit.org tutorials. iOS  
 
-*for iOS
