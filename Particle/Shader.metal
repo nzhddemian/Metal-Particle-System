@@ -8,7 +8,7 @@ struct Particle {
 
 kernel void firstPass(texture2d<half, access::write> output [[texture(0)]],
                       uint2 id [[thread_position_in_grid]]) {
-    output.write(half4(.5, 0., 0.1, 1.), id);
+    output.write(half4(.0, 0., 0.1, 1.), id);
 }
 
 kernel void secondPass(texture2d<half, access::write> output [[texture(0)]],
@@ -26,6 +26,8 @@ kernel void secondPass(texture2d<half, access::write> output [[texture(0)]],
     particle.velocity = velocity;
     particles[id] = particle;
     uint2 pos = uint2(position.x, position.y);
+    
+    
     output.write(half4(1.), pos);
     output.write(half4(1.), pos + uint2( 1, 0));
     output.write(half4(1.), pos + uint2( 0, 1));
