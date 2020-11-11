@@ -8,13 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		AD73C7B92555131C00CE081F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7B82555131C00CE081F /* AppDelegate.swift */; };
-		AD73C7BB2555131C00CE081F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7BA2555131C00CE081F /* SceneDelegate.swift */; };
-		AD73C7BD2555131C00CE081F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7BC2555131C00CE081F /* ContentView.swift */; };
 		AD73C7BF2555131D00CE081F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD73C7BE2555131D00CE081F /* Assets.xcassets */; };
 		AD73C7C22555131D00CE081F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD73C7C12555131D00CE081F /* Preview Assets.xcassets */; };
 		AD73C7C52555131D00CE081F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD73C7C32555131D00CE081F /* LaunchScreen.storyboard */; };
 		AD73C7D02555131E00CE081F /* ParticleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7CF2555131E00CE081F /* ParticleTests.swift */; };
 		AD73C7DB2555131E00CE081F /* ParticleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7DA2555131E00CE081F /* ParticleUITests.swift */; };
+		AD73C7E92555153C00CE081F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7E82555153C00CE081F /* ContentView.swift */; };
+		AD73C7EB255516B900CE081F /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7EA255516B900CE081F /* main.swift */; };
+		AD73C7ED2555183E00CE081F /* Render.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7EC2555183E00CE081F /* Render.swift */; };
+		AD73C7EF255519B900CE081F /* Shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = AD73C7EE255519B900CE081F /* Shader.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,8 +39,6 @@
 /* Begin PBXFileReference section */
 		AD73C7B52555131B00CE081F /* Particle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Particle.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD73C7B82555131C00CE081F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		AD73C7BA2555131C00CE081F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		AD73C7BC2555131C00CE081F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AD73C7BE2555131D00CE081F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AD73C7C12555131D00CE081F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AD73C7C42555131D00CE081F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -49,6 +49,10 @@
 		AD73C7D62555131E00CE081F /* ParticleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ParticleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD73C7DA2555131E00CE081F /* ParticleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleUITests.swift; sourceTree = "<group>"; };
 		AD73C7DC2555131E00CE081F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AD73C7E82555153C00CE081F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = ../ContentView.swift; sourceTree = "<group>"; };
+		AD73C7EA255516B900CE081F /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		AD73C7EC2555183E00CE081F /* Render.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Render.swift; sourceTree = "<group>"; };
+		AD73C7EE255519B900CE081F /* Shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shader.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,9 +103,11 @@
 		AD73C7B72555131B00CE081F /* Particle */ = {
 			isa = PBXGroup;
 			children = (
+				AD73C7EA255516B900CE081F /* main.swift */,
 				AD73C7B82555131C00CE081F /* AppDelegate.swift */,
-				AD73C7BA2555131C00CE081F /* SceneDelegate.swift */,
-				AD73C7BC2555131C00CE081F /* ContentView.swift */,
+				AD73C7E82555153C00CE081F /* ContentView.swift */,
+				AD73C7EC2555183E00CE081F /* Render.swift */,
+				AD73C7EE255519B900CE081F /* Shader.metal */,
 				AD73C7BE2555131D00CE081F /* Assets.xcassets */,
 				AD73C7C32555131D00CE081F /* LaunchScreen.storyboard */,
 				AD73C7C62555131D00CE081F /* Info.plist */,
@@ -268,8 +274,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD73C7B92555131C00CE081F /* AppDelegate.swift in Sources */,
-				AD73C7BB2555131C00CE081F /* SceneDelegate.swift in Sources */,
-				AD73C7BD2555131C00CE081F /* ContentView.swift in Sources */,
+				AD73C7E92555153C00CE081F /* ContentView.swift in Sources */,
+				AD73C7EB255516B900CE081F /* main.swift in Sources */,
+				AD73C7EF255519B900CE081F /* Shader.metal in Sources */,
+				AD73C7ED2555183E00CE081F /* Render.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,6 +447,7 @@
 				DEVELOPMENT_TEAM = K45Y8D35T5;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Particle/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -459,6 +468,7 @@
 				DEVELOPMENT_TEAM = K45Y8D35T5;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Particle/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
