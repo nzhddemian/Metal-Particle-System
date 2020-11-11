@@ -115,7 +115,6 @@
 				87B1F22B94689C1C1681FCC8 /* Pods-ParticleTests.debug.xcconfig */,
 				A69286BC59785C8B62D25732 /* Pods-ParticleTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -561,7 +560,7 @@
 				DEVELOPMENT_TEAM = K45Y8D35T5;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Particle/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -583,7 +582,7 @@
 				DEVELOPMENT_TEAM = K45Y8D35T5;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Particle/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

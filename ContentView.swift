@@ -14,7 +14,7 @@ class ContentView: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .red
-        mtlView.frame = UIScreen.main.bounds
+        mtlView.frame = UIScreen.main.nativeBounds
         render = Render(mtlView)
       
         self.view.addSubview(mtlView)

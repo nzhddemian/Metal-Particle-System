@@ -7,7 +7,7 @@ public class Render: NSObject, MTKViewDelegate {
     var firstState: MTLComputePipelineState!
     var secondState: MTLComputePipelineState!
     var particleBuffer: MTLBuffer!
-    let particleCount = 10000
+    let particleCount = 1000
     var particles = [Particle]()
     let side = 1200
     
@@ -57,19 +57,27 @@ public class Render: NSObject, MTKViewDelegate {
         let commandBuffer = queue.makeCommandBuffer(),
         let commandEncoder = commandBuffer.makeComputeCommandEncoder() {
          // first pass
+            let tex = drawable.texture
          commandEncoder.setComputePipelineState(firstState)
          commandEncoder.setTexture(drawable.texture, index: 0)
          let w = firstState.threadExecutionWidth
          let h = firstState.maxTotalThreadsPerThreadgroup / w
-         let threadsPerGroup = MTLSizeMake(w, h, 1)
-         var threadsPerGrid = MTLSizeMake(side, side, 1)
-         commandEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+        // let threadsPerGroup = MTLSizeMake(w, h, 1)
+         //var threadsPerGrid = MTLSizeMake(side, side, 1)
+            
+            
+            let threadGroupCount = MTLSizeMake(16, 16, 1)
+            let threadGroups = MTLSizeMake(tex.width/threadGroupCount.width , tex.height/threadGroupCount.height , 1)
+            
+          commandEncoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCount)
+         //commandEncoder.dispatchThreadgroups(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
          // second pass
          commandEncoder.setComputePipelineState(secondState)
-         commandEncoder.setTexture(drawable.texture, index: 0)
+         commandEncoder.setTexture(tex, index: 0)
          commandEncoder.setBuffer(particleBuffer, offset: 0, index: 0)
-         threadsPerGrid = MTLSizeMake(particleCount, 1, 1)
-         commandEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+            let threadGroupCount2 = MTLSizeMake(16, 1, 1)
+        let threadsPerGrid = MTLSizeMake(particleCount, 1, 1)
+         commandEncoder.dispatchThreadgroups(threadsPerGrid, threadsPerThreadgroup: threadGroupCount2)
          commandEncoder.endEncoding()
          commandBuffer.present(drawable)
          commandBuffer.commit()
