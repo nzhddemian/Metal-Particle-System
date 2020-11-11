@@ -4,6 +4,7 @@ using namespace metal;
 struct Particle {
     float2 position;
     float2 velocity;
+    float scale;
 };
 
 kernel void firstPass(texture2d<half, access::write> output [[texture(0)]],
@@ -26,7 +27,7 @@ kernel void secondPass(texture2d<half, access::write> output [[texture(0)]],
     particle.velocity = velocity;
     particles[id] = particle;
     uint2 pos = uint2(position.x, position.y);
-    
+    pos/=int(particle.scale);
     
     output.write(half4(1.), pos);
     output.write(half4(1.), pos + uint2( 1, 0));

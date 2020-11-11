@@ -16,7 +16,7 @@ class ContentView: UIViewController{
         self.view.backgroundColor = .red
         mtlView.frame = UIScreen.main.nativeBounds
         render = Render(mtlView)
-      
+       
         self.view.addSubview(mtlView)
     }
     
