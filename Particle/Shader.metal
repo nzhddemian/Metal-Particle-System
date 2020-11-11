@@ -64,7 +64,7 @@ vertex VertexOut vertex_main(const VertexIn vertex_in [[stage_in]],
     VertexOut vertex_out;
     Particle particle = particles[instanceid];
     vertex_out.position = particle.matrix * vertex_in.position ;
-    vertex_out.color = particle.color;
+    vertex_out.color = vertex_in.position.y*12.;
     return vertex_out;
 }
 

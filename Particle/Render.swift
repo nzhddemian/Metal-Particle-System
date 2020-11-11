@@ -34,12 +34,12 @@ public class Render: NSObject, MTKViewDelegate {
         particlesBuffer = device.makeBuffer(length: particles.count * MemoryLayout<Particle>.stride, options: [])!
         var pointer = particlesBuffer.contents().bindMemory(to: Particle.self, capacity: particles.count)
         for _ in particles {
-            pointer.pointee.initialMatrix = translate(by: [Float(drand48()) / 10, Float(drand48()) * 10, 0])
-            pointer.pointee.color = float4(0.2, 0.6, 0.9, 1)
+            pointer.pointee.initialMatrix = translate(by: [Float(drand48()) - 0.5, Float(drand48()) * 10, 0])
+            pointer.pointee.color = float4(1.1, 0.6, 0.9, 1)
             pointer = pointer.advanced(by: 1)
         }
         let allocator = MTKMeshBufferAllocator(device: device)
-        let sphere = MDLMesh(sphereWithExtent: [0.01, 0.01, 0.01], segments: [8, 8], inwardNormals: false, geometryType: .triangles, allocator: allocator)
+        let sphere = MDLMesh(sphereWithExtent: [0.2, 0.1, 0.01], segments: [8, 8], inwardNormals: false, geometryType: .triangles, allocator: allocator)
         do { model = try MTKMesh(mesh: sphere, device: device) }
         catch let e { print(e) }
     }
@@ -72,11 +72,12 @@ public class Render: NSObject, MTKViewDelegate {
     }
     
     func update() {
-        timer += 0.01
+        timer += 0.001
         var pointer = particlesBuffer.contents().bindMemory(to: Particle.self, capacity: particles.count)
         for _ in particles {
-            pointer.pointee.matrix = translate(by: [0, -3 * timer, 0]) * pointer.pointee.initialMatrix
+            pointer.pointee.matrix = translate(by: [0, -1 * sin(timer), 0]) * pointer.pointee.initialMatrix
             pointer = pointer.advanced(by: 1)
+          //  if pointer.pointee.matrix.y
         }
     }
     
