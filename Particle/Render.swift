@@ -4,16 +4,16 @@ public class Render: NSObject, MTKViewDelegate {
     
     public var device: MTLDevice!
     var queue: MTLCommandQueue!
-    var pipelineState: MTLRenderPipelineState!
-    var model: MTKMesh!
-    var particles: [Particle]!
-    var particlesBuffer: MTLBuffer!
-    var timer: Float = 0
+    var firstState: MTLComputePipelineState!
+    var secondState: MTLComputePipelineState!
+    var particleBuffer: MTLBuffer!
+    let particleCount = 10000
+    var particles = [Particle]()
+    let side = 1200
     
-    struct Particle {
-        var initialMatrix = matrix_identity_float4x4
-        var matrix = matrix_identity_float4x4
-        var color = float4()
+   struct Particle {
+        var position: float2
+        var velocity: float2
     }
     
     init(_ mtlView:MTKView ) {
@@ -26,75 +26,53 @@ public class Render: NSObject, MTKViewDelegate {
         mtlView.framebufferOnly = false
         
         initializeMetal()
-       
+       initializeBuffers()
     }
     
     func initializeBuffers() {
-        particles = [Particle](repeatElement(Particle(), count: 1000))
-        particlesBuffer = device.makeBuffer(length: particles.count * MemoryLayout<Particle>.stride, options: [])!
-        var pointer = particlesBuffer.contents().bindMemory(to: Particle.self, capacity: particles.count)
-        for _ in particles {
-            pointer.pointee.initialMatrix = translate(by: [Float(drand48()) / 10, Float(drand48()) * 10, 0])
-            pointer.pointee.color = float4(0.2, 0.6, 0.9, 1)
-            pointer = pointer.advanced(by: 1)
-        }
-        let allocator = MTKMeshBufferAllocator(device: device)
-        let sphere = MDLMesh(sphereWithExtent: [0.01, 0.01, 0.01], segments: [8, 8], inwardNormals: false, geometryType: .triangles, allocator: allocator)
-        do { model = try MTKMesh(mesh: sphere, device: device) }
-        catch let e { print(e) }
+          for _ in 0 ..< particleCount {
+                 let particle = Particle(position: float2(Float(arc4random() %  UInt32(side)), Float(arc4random() % UInt32(side))), velocity: float2((Float(arc4random() %  10) - 5) / 10, (Float(arc4random() %  10) - 5) / 10))
+                 particles.append(particle)
+             }
+             let size = particles.count * MemoryLayout<Particle>.size
+             particleBuffer = device.makeBuffer(bytes: &particles, length: size, options: [])
     }
     
     func initializeMetal() {
-       
-        
-        initializeBuffers()
-        let library: MTLLibrary!
         do {
-            library = try! device.makeDefaultLibrary()
-            let descriptor = MTLRenderPipelineDescriptor()
-            descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-            descriptor.vertexFunction = library.makeFunction(name: "vertex_main")
-            descriptor.fragmentFunction = library.makeFunction(name: "fragment_main")
-            descriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(model.vertexDescriptor)
-            pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
-        } catch let error as NSError {
-            fatalError("library error: " + error.description)
-        }
+          
+            let library = try! device.makeDefaultLibrary()
+            guard let firstPass = library!.makeFunction(name: "firstPass") else { return }
+            firstState = try device.makeComputePipelineState(function: firstPass)
+            guard let secondPass = library!.makeFunction(name: "secondPass") else { return }
+            secondState = try device.makeComputePipelineState(function: secondPass)
+        } catch let e { print(e) }
     }
     
-    func translate(by: float3) -> float4x4 {
-        return float4x4(columns: (
-            float4( 1,  0,  0,  0),
-            float4( 0,  1,  0,  0),
-            float4( 0,  0,  1,  0),
-            float4( by.x,  by.y,  by.z,  1)
-        ))
-    }
-    
-    func update() {
-        timer += 0.01
-        var pointer = particlesBuffer.contents().bindMemory(to: Particle.self, capacity: particles.count)
-        for _ in particles {
-            pointer.pointee.matrix = translate(by: [0, -3 * timer, 0]) * pointer.pointee.initialMatrix
-            pointer = pointer.advanced(by: 1)
-        }
-    }
     
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {  }
     
     public func draw(in view: MTKView) {
-        update()
-        guard let commandBuffer = queue.makeCommandBuffer(),
-              let descriptor = view.currentRenderPassDescriptor,
-              let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor),
-              let drawable = view.currentDrawable else { fatalError() }
-        let submesh = model.submeshes[0]
-        commandEncoder.setRenderPipelineState(pipelineState)
-        commandEncoder.setVertexBuffer(model.vertexBuffers[0].buffer, offset: 0, index: 0)
-        commandEncoder.setVertexBuffer(particlesBuffer, offset: 0, index: 1)
-        commandEncoder.drawIndexedPrimitives(type: .triangle, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: 0, instanceCount: particles.count)
-        commandEncoder.endEncoding()
-        commandBuffer.present(drawable)
-        commandBuffer.commit()
+        if let drawable = view.currentDrawable,
+        let commandBuffer = queue.makeCommandBuffer(),
+        let commandEncoder = commandBuffer.makeComputeCommandEncoder() {
+         // first pass
+         commandEncoder.setComputePipelineState(firstState)
+         commandEncoder.setTexture(drawable.texture, index: 0)
+         let w = firstState.threadExecutionWidth
+         let h = firstState.maxTotalThreadsPerThreadgroup / w
+         let threadsPerGroup = MTLSizeMake(w, h, 1)
+         var threadsPerGrid = MTLSizeMake(side, side, 1)
+         commandEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+         // second pass
+         commandEncoder.setComputePipelineState(secondState)
+         commandEncoder.setTexture(drawable.texture, index: 0)
+         commandEncoder.setBuffer(particleBuffer, offset: 0, index: 0)
+         threadsPerGrid = MTLSizeMake(particleCount, 1, 1)
+         commandEncoder.dispatchThreads(threadsPerGrid, threadsPerThreadgroup: threadsPerGroup)
+         commandEncoder.endEncoding()
+         commandBuffer.present(drawable)
+         commandBuffer.commit()
     }
+}
 }
