@@ -45,11 +45,13 @@ using namespace metal;
 
 struct VertexIn {
     float4 position [[attribute(0)]];
+   // float2 textureCoorinates [[attribute(1)]];
 };
 
 struct VertexOut {
     float4 position [[position]];
     float4 color;
+  //  float2 textureCoorinates;
 };
 
 struct Particle {
@@ -57,17 +59,33 @@ struct Particle {
     float4x4 matrix;
     float4 color;
 };
-
+float rand(float2 co)
+{
+    return fract(sin(dot(co.xy ,float2(12.9898,78.236))) * 43758.5453);
+}
 vertex VertexOut vertex_main(const VertexIn vertex_in [[stage_in]],
                              constant Particle *particles [[buffer(1)]],
-                             uint instanceid [[instance_id]]) {
+                             uint instanceid [[instance_id]], constant float &time [[buffer(2)]]) {
     VertexOut vertex_out;
     Particle particle = particles[instanceid];
-    vertex_out.position = particle.matrix * vertex_in.position ;
-    vertex_out.color = vertex_in.position.y*12.;
+   // float2 p = particle.matrix * vertex_in.position;
+    vertex_out.position = particle.matrix * vertex_in.position;
+  //  vertex_out.position.x+=sin(time)/1;
+    float2 uv = vertex_in.position.xy/100.;
+    float2 pos = vertex_in.position.xy;
+    float2 lightPos = float2(sin(time)*.5,cos(time)*.5);
+    pos*= 2;
+    pos+=lightPos;
+    float light = length(pos);
+    vertex_out.color.rgb = float3(light);
+   //  VertexOut.textureCoorinates = vertexData.textureCoorinates.xy;
     return vertex_out;
 }
 
-fragment float4 fragment_main(VertexOut vertex_in [[stage_in]]) {
-    return vertex_in.color;
+fragment float4 fragment_main(VertexOut vertex_in [[stage_in]], constant float &time [[buffer(2)]]) {
+    
+    float2 uv = vertex_in.position.xy;
+    //uv-=550.5;
+    float4 col = rand(uv*time);//float4(smoothstep(0.5,1.0,length(uv/300.)));
+    return vertex_in.color*col*2.;
 }

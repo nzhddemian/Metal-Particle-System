@@ -8,7 +8,9 @@
 
 import UIKit
 import MetalKit
+import ARKit
 class ContentView: UIViewController{
+    var session:ARSession!
     var render:Render!
     var mtlView=MTKView()
     override func viewDidLoad() {
@@ -18,6 +20,10 @@ class ContentView: UIViewController{
         render = Render(mtlView)
       
         self.view.addSubview(mtlView)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
 }

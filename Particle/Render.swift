@@ -30,18 +30,20 @@ public class Render: NSObject, MTKViewDelegate {
     }
     
     func initializeBuffers() {
-        particles = [Particle](repeatElement(Particle(), count: 1000))
+        particles = [Particle](repeatElement(Particle(), count: 100))
         particlesBuffer = device.makeBuffer(length: particles.count * MemoryLayout<Particle>.stride, options: [])!
         var pointer = particlesBuffer.contents().bindMemory(to: Particle.self, capacity: particles.count)
         for _ in particles {
-            pointer.pointee.initialMatrix = translate(by: [Float(drand48()) - 0.5, Float(drand48()) * 10, 0])
+            pointer.pointee.initialMatrix = translate(by: [Float((drand48()) - 0.5), (Float(drand48()) ), 0])
             pointer.pointee.color = float4(1.1, 0.6, 0.9, 1)
             pointer = pointer.advanced(by: 1)
-        }
+            
         let allocator = MTKMeshBufferAllocator(device: device)
-        let sphere = MDLMesh(sphereWithExtent: [0.2, 0.1, 0.01], segments: [8, 8], inwardNormals: false, geometryType: .triangles, allocator: allocator)
+            let sphere = MDLMesh(sphereWithExtent: [0.1, 0.1, 0.1], segments: [12, 12], inwardNormals: false, geometryType: .triangles, allocator: allocator)
+        
         do { model = try MTKMesh(mesh: sphere, device: device) }
         catch let e { print(e) }
+        }
     }
     
     func initializeMetal() {
@@ -72,11 +74,14 @@ public class Render: NSObject, MTKViewDelegate {
     }
     
     func update() {
-        timer += 0.001
+        timer += 0.01
         var pointer = particlesBuffer.contents().bindMemory(to: Particle.self, capacity: particles.count)
         for _ in particles {
-            pointer.pointee.matrix = translate(by: [0, -1 * sin(timer), 0]) * pointer.pointee.initialMatrix
+            pointer.pointee.matrix = translate(by: [ 0, -0.5, 1]) * pointer.pointee.initialMatrix
+            pointer.pointee.matrix.columns.1.x = sin(timer+Float(drand48()))*Float(drand48())
+            pointer.pointee.matrix.columns.1.w = cos(timer+Float(drand48()))*Float(drand48())//Float(particles.count)
             pointer = pointer.advanced(by: 1)
+           //
           //  if pointer.pointee.matrix.y
         }
     }
@@ -93,6 +98,8 @@ public class Render: NSObject, MTKViewDelegate {
         commandEncoder.setRenderPipelineState(pipelineState)
         commandEncoder.setVertexBuffer(model.vertexBuffers[0].buffer, offset: 0, index: 0)
         commandEncoder.setVertexBuffer(particlesBuffer, offset: 0, index: 1)
+        commandEncoder.setVertexBytes(&timer, length: MemoryLayout<Float>.stride, index: 2)
+        commandEncoder.setFragmentBytes(&timer, length: MemoryLayout<Float>.stride, index: 2)
         commandEncoder.drawIndexedPrimitives(type: .triangle, indexCount: submesh.indexCount, indexType: submesh.indexType, indexBuffer: submesh.indexBuffer.buffer, indexBufferOffset: 0, instanceCount: particles.count)
         commandEncoder.endEncoding()
         commandBuffer.present(drawable)
